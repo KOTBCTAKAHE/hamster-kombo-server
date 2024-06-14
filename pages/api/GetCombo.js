@@ -1,4 +1,4 @@
-// тестовое изменение для бранча deb
+// pages/api/GetCombo.js
 
 export default function handler(req, res) {
   res.status(200).json({
