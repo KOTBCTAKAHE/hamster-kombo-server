@@ -1,8 +1,4 @@
-// pages/api/allcards.js
-
-export default function handler(req, res) {
-  res.status(200).json({
-    {
+{
     "upgradesForBuy": [
         {
             "id": "support_team",
@@ -1764,7 +1760,4 @@ export default function handler(req, res) {
         "isClaimed": false,
         "remainSeconds": 86388
     }
-}
-
-  });
 }
