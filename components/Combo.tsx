@@ -22,11 +22,15 @@ const Combo: React.FC = () => {
     useEffect(() => {
         const fetchCombo = async () => {
             try {
+                console.log('Fetching combo data...');
                 const comboResponse = await axios.get<ComboResponse>('https://hamster-kombo-server.vercel.app/api/GetCombo');
+                console.log('Combo data:', comboResponse.data);
                 setCombo(comboResponse.data.combo);
                 setDate(comboResponse.data.date);
 
+                console.log('Fetching card names...');
                 const cardsResponse = await axios.get<Card[]>('https://raw.githubusercontent.com/KOTBCTAKAHE/hamster-kombo-server/dev/allcardids.json');
+                console.log('Cards data:', cardsResponse.data);
                 const cardNamesMap: { [key: string]: string } = {};
                 cardsResponse.data.forEach(card => {
                     cardNamesMap[card.id] = card.name;
