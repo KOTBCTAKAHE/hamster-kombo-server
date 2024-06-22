@@ -1,20 +1,54 @@
-// пэйдж тэсэикс типо нот фаунд типо да
+// app 
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-import { NextPage } from 'next';
-import Head from 'next/head';
+interface ComboResponse {
+    combo: string[];
+    date: string;
+}
 
-const NotFound: NextPage = () => {
-  return (
-    <>
-      <Head>
-        <title>Not Found</title>
-      </Head>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column' }}>
-        <h1>NOT_FOUND</h1>
-        <p>The page you are looking for does not exist.</p>
-      </div>
-    </>
-  );
+interface Card {
+    id: string;
+    name: string;
+}
+
+const Combo: React.FC = () => {
+    const [combo, setCombo] = useState<string[]>([]);
+    const [date, setDate] = useState<string>('');
+    const [cardNames, setCardNames] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchCombo = async () => {
+            try {
+                const comboResponse = await axios.get<ComboResponse>('https://hamster-kombo-server.vercel.app/api/GetCombo');
+                setCombo(comboResponse.data.combo);
+                setDate(comboResponse.data.date);
+
+                const cardsResponse = await axios.get<Card[]>('https://raw.githubusercontent.com/KOTBCTAKAHE/hamster-kombo-server/dev/allcardids.json');
+                const cardNamesMap: { [key: string]: string } = {};
+                cardsResponse.data.forEach(card => {
+                    cardNamesMap.card.id = card.name;
+                });
+
+                const names = comboResponse.data.combo.map(id => cardNamesMap[id]);
+                setCardNames(names);
+            } catch (error) {
+                console.error('Error fetching combo data:', error);
+            }
+        };
+
+        fetchCombo();
+    }, []);
+
+    return (
+        <div>
+            <h1>Вот сегодняшнее комбо!</h1>
+            <div>{cardNames.length > 0 && cardNames.map((name, index) => (
+                <div key={index}>{name}</div>
+            ))}</div>
+            <p>Дата: {date}</p>
+        </div>
+    );
 };
 
-export default NotFound;
+export default Combo;
