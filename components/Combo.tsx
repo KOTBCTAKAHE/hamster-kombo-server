@@ -24,19 +24,31 @@ const Combo: React.FC = () => {
             try {
                 console.log('Fetching combo data...');
                 const comboResponse = await axios.get<ComboResponse>('https://hamster-kombo-server.vercel.app/api/GetCombo');
+                if (!comboResponse.data || !comboResponse.data.combo) {
+                    throw new Error('Invalid combo response');
+                }
                 console.log('Combo data:', comboResponse.data);
                 setCombo(comboResponse.data.combo);
                 setDate(comboResponse.data.date);
 
                 console.log('Fetching card names...');
                 const cardsResponse = await axios.get<Card[]>('https://raw.githubusercontent.com/KOTBCTAKAHE/hamster-kombo-server/dev/allcardids.json');
+                if (!cardsResponse.data || !Array.isArray(cardsResponse.data)) {
+                    throw new Error('Invalid cards response');
+                }
                 console.log('Cards data:', cardsResponse.data);
                 const cardNamesMap: { [key: string]: string } = {};
                 cardsResponse.data.forEach(card => {
                     cardNamesMap[card.id] = card.name;
                 });
 
-                const names = comboResponse.data.combo.map(id => cardNamesMap[id]);
+                const names = comboResponse.data.combo.map(id => {
+                    const name = cardNamesMap[id];
+                    if (!name) {
+                        throw new Error(`Card name not found for id: ${id}`);
+                    }
+                    return name;
+                });
                 setCardNames(names);
             } catch (error) {
                 console.error('Error fetching combo data:', error);
